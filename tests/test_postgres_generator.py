@@ -1,7 +1,7 @@
 """
 Quick test of generator2.py with PostgreSQL.
 """
-from generator2 import run_agent, answer_synthesis
+from src.core.generator2 import run_agent, answer_synthesis
 from logger import get_logger
 
 logger = get_logger(__name__)

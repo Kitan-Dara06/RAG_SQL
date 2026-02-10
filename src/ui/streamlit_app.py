@@ -4,11 +4,11 @@ Dynamic database connection with chat interface for natural language SQL queries
 """
 import streamlit as st
 from sqlalchemy import create_engine, text
-from generator2 import run_agent, answer_synthesis
-from sql_rag import get_database_schema
-from indexer import sentence_transformer_ef
+from src.core.generator2 import run_agent, answer_synthesis
+from src.database.schema import get_database_schema
+from src.database.indexer import sentence_transformer_ef
 import chromadb
-from logger import get_logger
+from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

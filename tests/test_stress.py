@@ -14,7 +14,7 @@ class TestConcurrentQueries:
     
     def test_concurrent_schema_extraction(self, test_db):
         """Test concurrent schema extraction doesn't cause issues."""
-        from sql_rag import get_database_schema
+        from src.database.schema import get_database_schema
         
         def extract_schema():
             return get_database_schema(test_db)
@@ -125,7 +125,7 @@ class TestLargeSchemaHandling:
         import sqlite3
         import tempfile
         import os
-        from sql_rag import get_database_schema
+        from src.database.schema import get_database_schema
         
         with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as f:
             db_path = f.name

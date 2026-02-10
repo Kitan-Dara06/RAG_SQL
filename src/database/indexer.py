@@ -7,9 +7,9 @@ import re
 import chromadb
 from chromadb.utils import embedding_functions
 
-from sql_rag import get_database_schema
-from config import CHROMA_DB_PATH, EMBEDDING_MODEL, DB_TYPE
-from logger import get_logger
+from src.database.schema import get_database_schema
+from src.utils.config import CHROMA_DB_PATH, EMBEDDING_MODEL, DB_TYPE
+from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

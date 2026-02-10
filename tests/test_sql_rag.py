@@ -7,7 +7,7 @@ import os
 
 import pytest
 
-from sql_rag import get_database_schema
+from src.database.schema import get_database_schema
 
 
 class TestGetDatabaseSchema:

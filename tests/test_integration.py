@@ -107,7 +107,7 @@ class TestGenerator2Integration:
     
     def test_smart_retrieval_with_foreign_keys(self, test_db, chroma_client, embedding_function, mock_env):
         """Test smart retrieval includes related tables via foreign keys."""
-        from generator2 import smart_retrieval, run_agent
+        from src.core.generator2 import smart_retrieval, run_agent
         
         collection = chroma_client.get_or_create_collection(
             name="schema_index",
@@ -131,7 +131,7 @@ class TestGenerator2Integration:
     
     def test_ast_validation_in_pipeline(self, test_db, mock_env):
         """Test that AST validation works in the full pipeline."""
-        from generator2 import execute_sql
+        from src.core.generator2 import execute_sql
         
         # Try forbidden operation
         with patch('generator2.engine') as mock_engine:
@@ -143,7 +143,7 @@ class TestGenerator2Integration:
     
     def test_query_critic_feedback(self, test_db, chroma_client, embedding_function, mock_env):
         """Test that query critic provides helpful feedback."""
-        from generator2 import query_critic
+        from src.core.generator2 import query_critic
         
         failed_sql = "SELECT * FROM wrong_table;"
         error_msg = "no such table: wrong_table"
@@ -170,7 +170,7 @@ class TestAnswerSynthesis:
     
     def test_synthesize_simple_answer(self, mock_env):
         """Test synthesis of simple answer from query results."""
-        from generator2 import synthesize_answer
+        from src.core.generator2 import synthesize_answer
         
         question = "How many users are there?"
         sql_results = [(5,)]
@@ -186,7 +186,7 @@ class TestAnswerSynthesis:
     
     def test_synthesize_complex_answer(self, mock_env):
         """Test synthesis of complex answer with multiple rows."""
-        from generator2 import synthesize_answer
+        from src.core.generator2 import synthesize_answer
         
         question = "Who are the top spenders?"
         sql_results = [("Alice", 1500.00), ("Bob", 1200.00)]
@@ -203,7 +203,7 @@ class TestAnswerSynthesis:
     
     def test_synthesize_empty_results(self, mock_env):
         """Test synthesis when no results found."""
-        from generator2 import synthesize_answer
+        from src.core.generator2 import synthesize_answer
         
         question = "Who bought product X?"
         sql_results = []
@@ -220,14 +220,14 @@ class TestMultiDatabaseDialects:
     
     def test_sqlite_dialect(self, test_db, mock_env):
         """Test that SQLite dialect is correctly identified."""
-        from generator2 import dialect
+        from src.core.generator2 import dialect
         
         # Should be sqlite
         assert "sqlite" in dialect.lower(), "Should identify SQLite dialect"
     
     def test_dialect_specific_prompts(self, chroma_client, embedding_function, mock_env):
         """Test that prompts include dialect-specific information."""
-        from generator2 import run_agent
+        from src.core.generator2 import run_agent
         
         collection = chroma_client.get_or_create_collection(
             name="schema_index",
@@ -275,7 +275,7 @@ class TestIndexing:
     def test_indexer_creates_collection(self, test_db, chroma_client, embedding_function):
         """Test that indexer creates vector collection correctly."""
         import re
-        from sql_rag import get_database_schema
+        from src.database.schema import get_database_schema
         
         schemas = get_database_schema(test_db)
         

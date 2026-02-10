@@ -17,7 +17,7 @@ import chromadb
 from chromadb.utils import embedding_functions
 from openai import OpenAI
 
-from config import (
+from src.utils.config import (
     OPENAI_KEY,
     DB_PATH,
     CHROMA_DB_PATH,
@@ -25,8 +25,8 @@ from config import (
     EMBEDDING_MODEL,
     MAX_RETRIES,
 )
-from logger import get_logger
-from exceptions import SQLExecutionError, InvalidInputError
+from src.utils.logger import get_logger
+from src.utils.exceptions import SQLExecutionError, InvalidInputError
 
 # Initialize logger
 logger = get_logger(__name__)

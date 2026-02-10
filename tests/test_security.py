@@ -162,7 +162,7 @@ class TestASTValidation:
     
     def test_ast_detects_drop(self):
         """Test AST validation detects DROP statements."""
-        from generator2 import validate_sql_ast
+        from src.core.generator2 import validate_sql_ast
         
         is_valid, error = validate_sql_ast("DROP TABLE users;")
         
@@ -171,7 +171,7 @@ class TestASTValidation:
     
     def test_ast_detects_delete(self):
         """Test AST validation detects DELETE statements."""
-        from generator2 import validate_sql_ast
+        from src.core.generator2 import validate_sql_ast
         
         is_valid, error = validate_sql_ast("DELETE FROM users WHERE id = 1;")
         
@@ -179,7 +179,7 @@ class TestASTValidation:
     
     def test_ast_detects_update(self):
         """Test AST validation detects UPDATE statements."""
-        from generator2 import validate_sql_ast
+        from src.core.generator2 import validate_sql_ast
         
         is_valid, error = validate_sql_ast("UPDATE users SET name = 'Test';")
         
@@ -187,7 +187,7 @@ class TestASTValidation:
     
     def test_ast_detects_insert(self):
         """Test AST validation detects INSERT statements."""
-        from generator2 import validate_sql_ast
+        from src.core.generator2 import validate_sql_ast
         
         is_valid, error = validate_sql_ast("INSERT INTO users VALUES (1, 'Test');")
         
@@ -195,7 +195,7 @@ class TestASTValidation:
     
     def test_ast_detects_create(self):
         """Test AST validation detects CREATE statements."""
-        from generator2 import validate_sql_ast
+        from src.core.generator2 import validate_sql_ast
         
         is_valid, error = validate_sql_ast("CREATE TABLE hackers (id INTEGER);")
         
@@ -203,7 +203,7 @@ class TestASTValidation:
     
     def test_ast_allows_select(self):
         """Test AST validation allows SELECT statements."""
-        from generator2 import validate_sql_ast
+        from src.core.generator2 import validate_sql_ast
         
         is_valid, error = validate_sql_ast("SELECT * FROM users;")
         
@@ -212,7 +212,7 @@ class TestASTValidation:
     
     def test_ast_allows_complex_select(self):
         """Test AST validation allows complex SELECT with JOINs."""
-        from generator2 import validate_sql_ast
+        from src.core.generator2 import validate_sql_ast
         
         sql = """
         SELECT u.name, o.total 
@@ -227,7 +227,7 @@ class TestASTValidation:
     
     def test_ast_syntax_error_detection(self):
         """Test AST detects syntax errors."""
-        from generator2 import validate_sql_ast
+        from src.core.generator2 import validate_sql_ast
         
         is_valid, error = validate_sql_ast("SELECT * FORM users;")  # Typo
         

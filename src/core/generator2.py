@@ -23,7 +23,7 @@ from openai import OpenAI
 from sqlalchemy import create_engine, text
 from sqlglot import exp
 
-from config import (
+from src.utils.config import (
     OPENAI_KEY,
     DB_CONNECTION_STRING,
     DB_TYPE,
@@ -32,9 +32,9 @@ from config import (
     EMBEDDING_MODEL,
     MAX_RETRIES,
 )
-from logger import get_logger
-from exceptions import SQLExecutionError, DatabaseConnectionError, SchemaExtractionError
-from validators import sanitize_error_message
+from src.utils.logger import get_logger
+from src.utils.exceptions import SQLExecutionError, DatabaseConnectionError, SchemaExtractionError
+from src.validation.validators import sanitize_error_message
 
 # Initialize logger
 logger = get_logger(__name__)

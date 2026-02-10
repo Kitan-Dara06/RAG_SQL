@@ -5,9 +5,9 @@ Uses a token bucket algorithm for smooth rate limiting.
 import time
 import threading
 from functools import wraps
-from config import RATE_LIMIT_PER_MINUTE
-from logger import get_logger
-from exceptions import RateLimitError
+from src.utils.config import RATE_LIMIT_PER_MINUTE
+from src.utils.logger import get_logger
+from src.utils.exceptions import RateLimitError
 
 logger = get_logger(__name__)
 

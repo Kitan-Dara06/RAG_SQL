@@ -3,9 +3,9 @@ Input validation utilities for SQL_RAG project.
 Validates user inputs and sanitizes data to prevent security issues.
 """
 import re
-from config import MAX_QUESTION_LENGTH
-from logger import get_logger
-from exceptions import InvalidInputError
+from src.utils.config import MAX_QUESTION_LENGTH
+from src.utils.logger import get_logger
+from src.utils.exceptions import InvalidInputError
 
 logger = get_logger(__name__)
 
