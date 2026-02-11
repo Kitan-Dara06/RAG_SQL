@@ -1,11 +1,10 @@
 """
-Centralized logging configuration for SQL_RAG project.
-Provides consistent logging across all modules with file and console output.
+Centralized logging configuration for SQL_RAG.
 """
 import logging
 import sys
 from pathlib import Path
-from config import LOG_LEVEL, LOG_FILE
+from .config import LOG_LEVEL, LOG_FILE
 
 
 def setup_logger(name: str = "sql_rag") -> logging.Logger:
