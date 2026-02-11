@@ -1,6 +1,7 @@
 # SQL_RAG - Universal SQL Agent
 
 A production-ready SQL query generator using Retrieval-Augmented Generation (RAG) with smart schema retrieval and multi-database support.
+Test with: https://kitan-dara06-rag-sql-srcuistreamlit-app-wfghav.streamlit.app/
 
 ## Features
 
