@@ -34,13 +34,6 @@ logger.info("Generated IDs: %s", ids)
 # Initialize ChromaDB
 client = chromadb.PersistentClient(path=CHROMA_DB_PATH)
 
-# Delete old collection to avoid conflicts
-try:
-    client.delete_collection(name="schema_index")
-    logger.info("Deleted old 'schema_index' collection")
-except ValueError:
-    logger.info("No existing 'schema_index' collection to delete")
-
 # Create new collection with embeddings
 sentence_transformer_ef = embedding_functions.SentenceTransformerEmbeddingFunction(
     model_name=EMBEDDING_MODEL
