@@ -2,6 +2,13 @@
 Universal SQL Agent - Streamlit UI
 Dynamic database connection with chat interface for natural language SQL queries.
 """
+import sys
+from pathlib import Path
+
+# Add parent directory to path for imports (needed for Streamlit Cloud)
+root_dir = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(root_dir))
+
 import streamlit as st
 from sqlalchemy import create_engine, text
 from src.core.generator2 import run_agent, answer_synthesis
