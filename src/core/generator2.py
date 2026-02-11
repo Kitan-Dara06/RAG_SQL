@@ -350,17 +350,26 @@ def run_agent(question, engine=None, collection=None):
     messages = [
         {
             "role": "system",
-            "content": f"""
-            You are an expert {dialect.upper()} Data Analyst.
+            "content": f"""You are an expert {dialect.upper()} SQL query generator.
 
-                Schema:
-                {context_sql}
+Schema:
+{context_sql}
 
-                Rules:
-                1. Use ONLY the provided schema.
-                2. Write valid {dialect.upper()} SQL.
-                3. Return ONLY raw SQL. No markdown.
-                """,
+CRITICAL RULES:
+1. Return ONLY valid {dialect.upper()} SQL query - nothing else
+2. NO explanations, NO markdown, NO comments
+3. NO text like "The schema doesn't include..." or "You would typically..."
+4. If you cannot answer, return: SELECT 'Unable to generate query for this question' AS error;
+5. Use ONLY tables and columns from the provided schema
+6. Return a single executable SQL statement
+
+Example of CORRECT response:
+SELECT COUNT(*) FROM users;
+
+Example of WRONG response:
+The provided schema does not include...
+
+Your response must be executable SQL ONLY.""",
         },
         {"role": "user", "content": question},
     ]
