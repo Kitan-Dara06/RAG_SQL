@@ -9,9 +9,25 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+# Try to import streamlit for cloud deployment
+try:
+    import streamlit as st
+    HAS_STREAMLIT = True
+except ImportError:
+    HAS_STREAMLIT = False
+
 # OpenAI Configuration
-OPENAI_KEY = os.getenv("OPENAI_KEY", "")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+# Try Streamlit secrets first (for cloud deployment), then environment variables
+if HAS_STREAMLIT:
+    try:
+        OPENAI_KEY = st.secrets.get("OPENAI_KEY", os.getenv("OPENAI_KEY", ""))
+        OPENAI_MODEL = st.secrets.get("OPENAI_MODEL", os.getenv("OPENAI_MODEL", "gpt-4o-mini"))
+    except:
+        OPENAI_KEY = os.getenv("OPENAI_KEY", "")
+        OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+else:
+    OPENAI_KEY = os.getenv("OPENAI_KEY", "")
+    OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
 # Database Configuration
 DB_TYPE = os.getenv("DB_TYPE", "sqlite")
