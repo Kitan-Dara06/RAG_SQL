@@ -1,50 +1,17 @@
 """
-Schema indexer for SQL_RAG.
-Extracts database schema and indexes it into ChromaDB for vector search.
+Schema indexing for SQL_RAG using ChromaDB.
+Provides utilities for indexing database schemas into vector database.
 """
-import re
-
 import chromadb
 from chromadb.utils import embedding_functions
-
-from src.database.schema import get_database_schema
-from src.utils.config import CHROMA_DB_PATH, EMBEDDING_MODEL, DB_TYPE
+from src.utils.config import CHROMA_DB_PATH, EMBEDDING_MODEL
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-# Extract schemas from database
-logger.info("Extracting schemas from %s database", DB_TYPE)
-schemas = get_database_schema()
-
-# Generate IDs from table names
-ids = []
-for sql in schemas:
-    pattern = r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?([^\s\(]+)"
-    match = re.search(pattern, sql, re.IGNORECASE)
-    
-    if match:
-        table_name = match.group(1).strip('"')
-        ids.append(table_name)
-    else:
-        ids.append(f"table_{len(ids)}")
-
-logger.info("Generated IDs: %s", ids)
-
-# Initialize ChromaDB
-client = chromadb.PersistentClient(path=CHROMA_DB_PATH)
-
-# Create new collection with embeddings
+# Initialize sentence transformer embedding function (can be imported by other modules)
 sentence_transformer_ef = embedding_functions.SentenceTransformerEmbeddingFunction(
     model_name=EMBEDDING_MODEL
 )
-collection = client.get_or_create_collection(
-    name="schema_index", embedding_function=sentence_transformer_ef
-)
 
-# Index schemas
-collection.add(documents=schemas, ids=ids)
-logger.info("Indexed %d tables into 'schema_index'", len(schemas))
-
-print(f" Successfully indexed {len(schemas)} tables from {DB_TYPE} database")
-print(f"Tables: {ids}")
+logger.info("Indexer module loaded with embedding model: %s", EMBEDDING_MODEL)
