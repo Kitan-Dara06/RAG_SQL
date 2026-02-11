@@ -295,7 +295,7 @@ if prompt := st.chat_input("Ask a question about your database..."):
                     
                     logger.info("Query succeeded: %s", prompt)
                     
-                else:
+                elif result:
                     error_msg = f"❌ Sorry, I couldn't answer that question.\n\n**Error:** {result.get('error', 'Unknown error')}"
                     st.markdown(error_msg)
                     st.session_state.messages.append({
@@ -303,6 +303,15 @@ if prompt := st.chat_input("Ask a question about your database..."):
                         "content": error_msg
                     })
                     logger.warning("Query failed: %s", result.get('error'))
+                else:
+                    # result is None
+                    error_msg = "❌ Sorry, I couldn't answer that question. Please check the logs for details."
+                    st.markdown(error_msg)
+                    st.session_state.messages.append({
+                        "role": "assistant",
+                        "content": error_msg
+                    })
+                    logger.error("Query returned None")
                     
             except Exception as e:
                 error_msg = f"❌ An error occurred: {str(e)}"
