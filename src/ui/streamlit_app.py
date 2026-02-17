@@ -52,68 +52,129 @@ st.markdown("""
 with st.sidebar:
     st.header("🔌 Database Connection")
     
-    db_type = st.selectbox(
-        "Database Type",
-        ["SQLite", "PostgreSQL", "MySQL"],
-        help="Select your database type"
+    # --- QUICK CONNECT: Paste a connection string ---
+    st.subheader("⚡ Quick Connect")
+    conn_string_input = st.text_input(
+        "Paste Connection String",
+        placeholder="postgresql+asyncpg://user:pass@host:5432/dbname",
+        help="Paste a full database URL and we'll extract everything for you"
     )
     
-    # Dynamic form based on database type
-    if db_type == "SQLite":
-        db_path = st.text_input(
-            "Database File Path",
-            value="enterprise.db",
-            help="Path to your SQLite database file"
-        )
-        conn_string = f"sqlite:///{db_path}"
-        
-    else:  # PostgreSQL or MySQL
-        col1, col2 = st.columns(2)
-        with col1:
-            host = st.text_input("Host", value="localhost")
-            user = st.text_input("User", value="postgres" if db_type == "PostgreSQL" else "root")
-        with col2:
-            port = st.text_input("Port", value="5432" if db_type == "PostgreSQL" else "3306")
-            password = st.text_input("Password", type="password", help="Your password is not stored")
-        
-        dbname = st.text_input("Database Name", value="enterprise")
-        
-        # Construct connection string
-        if db_type == "PostgreSQL":
-            conn_string = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
-        elif db_type == "MySQL":
-            conn_string = f"mysql+pymysql://{user}:{password}@{host}:{port}/{dbname}"
-    
-    # Connection button
-    if st.button("🚀 Connect", type="primary"):
+    if st.button("🔗 Parse & Connect", type="primary", disabled=not conn_string_input):
         try:
+            from src.utils.config import parse_connection_string
+            parsed = parse_connection_string(conn_string_input)
+            
+            # Show parsed components
+            st.session_state['parsed_components'] = parsed
+            
             with st.spinner("Testing connection..."):
-                # Test the connection
-                test_engine = create_engine(conn_string)
+                test_engine = create_engine(parsed["clean_url"])
                 with test_engine.connect() as conn:
-                    # Test query based on database type
-                    if db_type == "SQLite":
+                    if parsed["db_type"] == "SQLite":
                         result = conn.execute(text("SELECT sqlite_version();"))
-                    elif db_type == "PostgreSQL":
+                    else:
                         result = conn.execute(text("SELECT version();"))
-                    else:  # MySQL
-                        result = conn.execute(text("SELECT version();"))
-                    
                     version = result.fetchone()[0]
                 
                 # Save to session
                 st.session_state['db_engine'] = test_engine
-                st.session_state['db_type'] = db_type
-                st.session_state['conn_string'] = conn_string
+                st.session_state['db_type'] = parsed["db_type"]
+                st.session_state['conn_string'] = parsed["clean_url"]
                 st.session_state['schema_indexed'] = False
                 
-                st.success(f"✅ Connected to {db_type}!")
+                st.success(f"✅ Connected to {parsed['db_type']}!")
                 st.caption(f"Version: {version[:50]}...")
-                logger.info("Connected to %s database", db_type)
+                logger.info("Quick-connected to %s database at %s", parsed['db_type'], parsed['host'])
                 
+        except ValueError as e:
+            st.error(f"❌ Parse error: {str(e)}")
+            logger.error("Connection string parse failed: %s", str(e))
         except Exception as e:
             st.error(f"❌ Connection failed: {str(e)}")
-            logger.error("Connection failed: %s", str(e))
+            logger.error("Quick-connect failed: %s", str(e))
+    
+    # Show parsed components if available
+    if 'parsed_components' in st.session_state:
+        p = st.session_state['parsed_components']
+        with st.expander("📋 Parsed Components", expanded=False):
+            st.markdown(f"""
+| Field | Value |
+|-------|-------|
+| **Type** | {p['db_type']} |
+| **Host** | {p['host']} |
+| **Port** | {p['port']} |
+| **User** | {p['user']} |
+| **Database** | {p['dbname']} |
+| **Driver** | {p.get('driver') or 'default'} |
+""")
+    
+    st.divider()
+    
+    # --- MANUAL CONNECT: Fill in fields individually ---
+    with st.expander("🔧 Manual Connect", expanded="db_engine" not in st.session_state and not conn_string_input):
+        db_type = st.selectbox(
+            "Database Type",
+            ["SQLite", "PostgreSQL", "MySQL"],
+            help="Select your database type"
+        )
+        
+        # Dynamic form based on database type
+        if db_type == "SQLite":
+            db_path = st.text_input(
+                "Database File Path",
+                value="enterprise.db",
+                help="Path to your SQLite database file"
+            )
+            conn_string = f"sqlite:///{db_path}"
+            
+        else:  # PostgreSQL or MySQL
+            col1, col2 = st.columns(2)
+            with col1:
+                host = st.text_input("Host", value="localhost")
+                user = st.text_input("User", value="postgres" if db_type == "PostgreSQL" else "root")
+            with col2:
+                port = st.text_input("Port", value="5432" if db_type == "PostgreSQL" else "3306")
+                password = st.text_input("Password", type="password", help="Your password is not stored")
+            
+            dbname = st.text_input("Database Name", value="enterprise")
+            
+            # Construct connection string
+            if db_type == "PostgreSQL":
+                conn_string = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
+            elif db_type == "MySQL":
+                conn_string = f"mysql+pymysql://{user}:{password}@{host}:{port}/{dbname}"
+    
+        # Connection button
+        if st.button("🚀 Connect", type="primary"):
+            try:
+                with st.spinner("Testing connection..."):
+                    # Test the connection
+                    test_engine = create_engine(conn_string)
+                    with test_engine.connect() as conn:
+                        # Test query based on database type
+                        if db_type == "SQLite":
+                            result = conn.execute(text("SELECT sqlite_version();"))
+                        elif db_type == "PostgreSQL":
+                            result = conn.execute(text("SELECT version();"))
+                        else:  # MySQL
+                            result = conn.execute(text("SELECT version();"))
+                        
+                        version = result.fetchone()[0]
+                    
+                    # Save to session
+                    st.session_state['db_engine'] = test_engine
+                    st.session_state['db_type'] = db_type
+                    st.session_state['conn_string'] = conn_string
+                    st.session_state['schema_indexed'] = False
+                    
+                    st.success(f"✅ Connected to {db_type}!")
+                    st.caption(f"Version: {version[:50]}...")
+                    logger.info("Connected to %s database", db_type)
+                    
+            except Exception as e:
+                st.error(f"❌ Connection failed: {str(e)}")
+                logger.error("Connection failed: %s", str(e))
     
     # Show connection status
     if "db_engine" in st.session_state:
